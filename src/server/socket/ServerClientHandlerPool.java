@@ -1,13 +1,15 @@
 package server.socket;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ServerClientHandlerPool
 {
     private final Set<ServerClientHandler> CLIENT_HANDLERS;
 
-    public ServerClientHandlerPool()
+  public ServerClientHandlerPool()
     {
         this.CLIENT_HANDLERS = new HashSet<>();
     }
@@ -21,6 +23,13 @@ public class ServerClientHandlerPool
 
     public void add(ServerClientHandler handler)
     {
-
+      CLIENT_HANDLERS.add(handler);
     }
+
+  public List<ServerClientHandler> getClients()
+  {
+    return new ArrayList<>(CLIENT_HANDLERS);
+  }
+
+
 }

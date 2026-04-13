@@ -1,5 +1,9 @@
 package server.socket;
 
+import server.socket.json.JsonMessage;
+import server.socket.json.JsonUtil;
+import server.socket.json.MessageType;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -8,6 +12,7 @@ import java.util.Scanner;
 public class ServerSocketManager
 {
     public final ServerClientHandlerPool HANDLER_POOL;
+    private static final String SENDER_ID = "server";
     private ServerSocket welcomeSocket;
     private boolean RUNNING = true;
 
@@ -28,7 +33,7 @@ public class ServerSocketManager
 
                 Socket socket = welcomeSocket.accept();
 
-                ServerClientHandler handler = new ServerClientHandler(socket, HANDLER_POOL);
+                ServerClientHandler handler = new ServerClientHandler(socket, HANDLER_POOL, SENDER_ID);
                 Thread thread = new Thread(handler);
                 thread.setDaemon(true);
                 thread.start();
@@ -44,6 +49,7 @@ public class ServerSocketManager
         HANDLER_POOL.broadcast(message, null);
     }
 
+    // TODO fix this
     private void broadcastThread()
     {
         new Thread(() -> {
@@ -52,7 +58,8 @@ public class ServerSocketManager
                 String text = sc.nextLine();
 
                 if (text.equalsIgnoreCase("q")) {
-                    broadcast(MessageType.BROADCAST + ";SERVER: " + "shutting down server");
+                  JsonMessage message = JsonMessage.createBroadcastMessage(SENDER_ID, "SERVER: " + "shutting down server");
+                  broadcast(JsonUtil.toJson(message));
                     System.out.println("Terminating server");
                     terminateServer();
                     sc.close();
