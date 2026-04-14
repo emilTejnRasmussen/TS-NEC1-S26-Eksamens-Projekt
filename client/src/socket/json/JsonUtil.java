@@ -1,7 +1,8 @@
-package server.socket.json;
+package socket.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import server.socket.json.JsonMessage;
 
 public final class JsonUtil
 {

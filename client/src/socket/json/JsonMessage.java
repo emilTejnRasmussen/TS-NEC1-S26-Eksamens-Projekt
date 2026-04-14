@@ -1,4 +1,7 @@
-package server.socket.json;
+package socket.json;
+
+import server.socket.json.ClientType;
+import server.socket.json.MessageType;
 
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicInteger;

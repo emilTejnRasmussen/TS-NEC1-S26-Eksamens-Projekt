@@ -1,4 +1,6 @@
-package server.socket;
+package socket;
+
+import server.socket.ServerClientHandler;
 
 import java.util.ArrayList;
 import java.util.HashSet;

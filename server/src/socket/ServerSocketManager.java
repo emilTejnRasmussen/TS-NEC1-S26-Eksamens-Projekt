@@ -1,5 +1,6 @@
-package server.socket;
+package socket;
 
+import server.socket.ServerClientHandler;
 import server.socket.json.JsonMessage;
 import server.socket.json.JsonUtil;
 import server.socket.json.MessageType;

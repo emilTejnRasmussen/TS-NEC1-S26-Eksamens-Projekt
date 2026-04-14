@@ -1,4 +1,4 @@
-package server.socket.json;
+package socket.json;
 
 public enum ClientType
 {
