@@ -27,24 +27,130 @@ public class JsonMessage
     return BODY;
   }
 
-  //  CREATE MESSAGES
+  //  MESSAGES
+
+  // Client -> Server
+  public static JsonMessage createRegisterMessage(String senderId,
+      Integer spotId, ClientType clientType)
+  {
+    Header header = createHeader(senderId, null, MessageType.REGISTER);
+
+    Body body;
+
+    if (spotId == null)
+    {
+      body = new Body("DISPLAY screen registered ", null, clientType, null,
+          null, null, null, null);
+    }
+    else
+    {
+      body = new Body(clientType + " registered at parking spot: " + spotId,
+          null, clientType, spotId, null, null, null, null);
+    }
+    return new JsonMessage(header, body);
+  }
+
+  public static JsonMessage createHeartbeatMessage(String senderId,
+      Integer spotId, ClientType clientType)
+  {
+    Header header = createHeader(senderId, null, MessageType.HEARTBEAT);
+
+    Body body = new Body(clientType + " is alive", null, clientType, spotId,
+        null, null, null, null);
+
+    return new JsonMessage(header, body);
+  }
+
+  public static JsonMessage createCarParkedMessage(String senderId, int spotId)
+  {
+    Header header = createHeader(senderId, null, MessageType.CAR_PARKED);
+
+    String message = "Parking spot " + spotId + " is occupied";
+    Body body = new Body(message, null,
+        ClientType.SENSOR, spotId, null, null, null, null);
+    return new JsonMessage(header, body);
+  }
+
+  public static JsonMessage createCarLeftMessage(String senderId, int spotId)
+  {
+    Header header = createHeader(senderId, null, MessageType.CAR_LEFT);
+
+    String message = "Parking spot " + spotId + " is freed";
+    Body body = new Body(message, null, ClientType.SENSOR, null, null, null,
+        null, null);
+    return new JsonMessage(header, body);
+  }
+
+  // Server -> client
+  public static JsonMessage createAckMessage(String senderId,
+      int responseMessageId, MessageType type)
+  {
+    Header header = createHeader(senderId, responseMessageId, MessageType.ACK);
+
+    Body body = new Body(type + " accepted", null, null, null, null, null,
+        null, null);
+    return new JsonMessage(header, body);
+  }
+
   public static JsonMessage createErrorMessage(String senderId,
       String errorMessage, int responseMessageId)
   {
     Header header = createHeader(senderId, responseMessageId,
         MessageType.ERROR);
 
-    Body body = new Body(null, errorMessage);
+    Body body = new Body(null, errorMessage, null, null, null, null, null, null);
     return new JsonMessage(header, body);
   }
 
-  public static JsonMessage createBroadcastMessage(
-      String senderId, String text)
+  public static JsonMessage createSetLightMessage(String senderId,
+      boolean isOccupied, Integer spotId)
   {
-    Header header = createHeader(senderId, null,
-        MessageType.BROADCAST);
+    Header header = createHeader(senderId, null, MessageType.SET_LIGHT);
 
-    Body body = new Body(text, null);
+    String color = isOccupied ? "RED" : "GREEN";
+
+    Body body = new Body("Change to color to " + color, null, null, spotId,
+        isOccupied, color, null, null);
+    return new JsonMessage(header, body);
+  }
+
+  public static JsonMessage createUpdateTotalMessage(String senderId,
+      int freeSpaces, int totalSpaces)
+  {
+    Header header = createHeader(senderId, null, MessageType.UPDATE_TOTAL);
+
+    String text = freeSpaces + "/" + totalSpaces;
+
+    Body body = new Body(MessageType.UPDATE_TOTAL.toString(), null, null, null,
+        null, null, freeSpaces, totalSpaces);
+    return new JsonMessage(header, body);
+  }
+
+  public static JsonMessage createSyncStateMessage(String senderId,
+      Integer responseMessageId, ClientType clientType, Integer spotId,
+      Boolean occupied, String color, Integer freeSpaces, Integer totalSpaces)
+  {
+    Header header = createHeader(senderId, responseMessageId,
+        MessageType.SYNC_STATE);
+
+    Body body = new Body(
+        "STATE_SYNC",
+        null,
+        clientType,
+        spotId,
+        occupied,
+        color,
+        freeSpaces,
+        totalSpaces
+    );
+    return new JsonMessage(header, body);
+  }
+
+  public static JsonMessage createBroadcastMessage(String senderId, String text)
+  {
+    Header header = createHeader(senderId, null, MessageType.BROADCAST);
+
+    Body body = new Body(text, null, null, null, null, null, null, null);
     return new JsonMessage(header, body);
   }
 
@@ -54,7 +160,7 @@ public class JsonMessage
     Header header = createHeader(senderId, null,
         MessageType.BROADCAST_SPOT_STATUS_CHANGED);
 
-    Body body = new Body(text, null);
+    Body body = new Body(text, null, null, null, null, null, null, null);
     return new JsonMessage(header, body);
   }
 
@@ -64,7 +170,7 @@ public class JsonMessage
     Header header = createHeader(senderId, null,
         MessageType.BROADCAST_TOTAL_CHANGED);
 
-    Body body = new Body(text, null);
+    Body body = new Body(text, null, null, null, null, null, null, null);
     return new JsonMessage(header, body);
   }
 
@@ -75,77 +181,16 @@ public class JsonMessage
         responseMessageId, Instant.now().toString(), senderId, type.toString());
   }
 
-  public static class Header
+  public record Header(String VERSION, int MESSAGE_ID,
+                       Integer MESSAGE_RESPONSE_ID, String TIMESTAMP,
+                       String SENDER_ID, String TYPE)
   {
-    private final String VERSION;
-    private final int MESSAGE_ID;
-    private final Integer MESSAGE_RESPONSE_ID;
-    private final String TIMESTAMP;
-    private final String SENDER_ID;
-    private final String TYPE;
-
-    public Header(String VERSION, int MESSAGE_ID, Integer MESSAGE_RESPONSE_ID,
-        String TIMESTAMP, String SENDER_ID, String TYPE)
-    {
-      this.VERSION = VERSION;
-      this.MESSAGE_ID = MESSAGE_ID;
-      this.MESSAGE_RESPONSE_ID = MESSAGE_RESPONSE_ID;
-      this.TIMESTAMP = TIMESTAMP;
-      this.SENDER_ID = SENDER_ID;
-      this.TYPE = TYPE;
-    }
-
-    public String getVERSION()
-    {
-      return VERSION;
-    }
-
-    public int getMESSAGE_ID()
-    {
-      return MESSAGE_ID;
-    }
-
-    public Integer getMESSAGE_RESPONSE_ID()
-    {
-      return MESSAGE_RESPONSE_ID;
-    }
-
-    public String getTIMESTAMP()
-    {
-      return TIMESTAMP;
-    }
-
-    public String getSENDER_ID()
-    {
-      return SENDER_ID;
-    }
-
-    public String getTYPE()
-    {
-      return TYPE;
-    }
   }
 
-  public static class Body
+  public record Body(String TEXT, String ERROR_DESCRIPTION,
+                     ClientType CLIENT_TYPE, Integer SPOT_ID, Boolean OCCUPIED,
+                     String COLOR, Integer FREE_SPACES, Integer TOTAL_SPACES)
   {
-    private final String TEXT;
-    private final String ERROR_DESCRIPTION;
-
-    public Body(String TEXT, String ERROR_DESCRIPTION)
-    {
-      this.TEXT = TEXT;
-      this.ERROR_DESCRIPTION = ERROR_DESCRIPTION;
-    }
-
-    public String getTEXT()
-    {
-      return TEXT;
-    }
-
-    public String getERROR_DESCRIPTION()
-    {
-      return ERROR_DESCRIPTION;
-    }
   }
 
 }
