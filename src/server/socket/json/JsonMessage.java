@@ -39,7 +39,7 @@ public class JsonMessage
 
     if (spotId == null)
     {
-      body = new Body("DISPLAY screen registered ", null, clientType, null,
+      body = new Body(clientType + " registered ", null, clientType, null,
           null, null, null, null);
     }
     else
@@ -76,7 +76,7 @@ public class JsonMessage
     Header header = createHeader(senderId, null, MessageType.CAR_LEFT);
 
     String message = "Parking spot " + spotId + " is freed";
-    Body body = new Body(message, null, ClientType.SENSOR, null, null, null,
+    Body body = new Body(message, null, ClientType.SENSOR, spotId, null, null,
         null, null);
     return new JsonMessage(header, body);
   }
@@ -118,8 +118,6 @@ public class JsonMessage
       int freeSpaces, int totalSpaces)
   {
     Header header = createHeader(senderId, null, MessageType.UPDATE_TOTAL);
-
-    String text = freeSpaces + "/" + totalSpaces;
 
     Body body = new Body(MessageType.UPDATE_TOTAL.toString(), null, null, null,
         null, null, freeSpaces, totalSpaces);
