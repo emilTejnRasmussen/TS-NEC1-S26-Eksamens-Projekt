@@ -1,9 +1,9 @@
 package socket;
 
-import server.socket.ServerClientHandler;
-import server.socket.json.JsonMessage;
-import server.socket.json.JsonUtil;
-import server.socket.json.MessageType;
+import socket.ServerClientHandler;
+import socket.json.JsonMessage;
+import socket.json.JsonUtil;
+import socket.json.MessageType;
 
 import java.io.IOException;
 import java.net.ServerSocket;
