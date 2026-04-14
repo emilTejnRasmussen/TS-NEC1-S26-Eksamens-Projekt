@@ -1,5 +1,7 @@
 package socket;
 
+import socket.json.JsonMessage;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +16,7 @@ public class ServerClientHandlerPool
         this.CLIENT_HANDLERS = new HashSet<>();
     }
 
-    public void broadcast(String message, ServerClientHandler source)
+    public void broadcast(JsonMessage message, ServerClientHandler source)
     {
         for (ServerClientHandler handler : CLIENT_HANDLERS)
             if (!handler.equals(source))

@@ -45,7 +45,7 @@ public class ServerSocketManager
         }
     }
 
-    public void broadcast(String message) {
+    public void broadcast(JsonMessage message) {
         HANDLER_POOL.broadcast(message, null);
     }
 
@@ -59,14 +59,15 @@ public class ServerSocketManager
 
                 if (text.equalsIgnoreCase("q")) {
                   JsonMessage message = JsonMessage.createBroadcastMessage(SENDER_ID, "SERVER: " + "shutting down server");
-                  broadcast(JsonUtil.toJson(message));
+                  broadcast(message);
                     System.out.println("Terminating server");
                     terminateServer();
                     sc.close();
                     break;
                 }
                 else {
-                    broadcast(MessageType.BROADCAST + ";Server: " + text);
+                    JsonMessage message = JsonMessage.createBroadcastMessage(SENDER_ID, "SERVER: " + text);
+                    broadcast(message);
                 }
             }
         }).start();
