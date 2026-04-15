@@ -1,4 +1,4 @@
-import server.socket.ServerSocketManager;
+import socket.ServerSocketManager;
 
 void main() {
     new ServerSocketManager(6789);

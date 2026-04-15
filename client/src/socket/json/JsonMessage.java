@@ -176,12 +176,12 @@ public class JsonMessage
       MessageType type)
   {
     return new Header(CURRENT_VERSION, NEXT_ID.getAndIncrement(),
-        responseMessageId, Instant.now().toString(), senderId, type.toString());
+        responseMessageId, Instant.now().toString(), senderId, type);
   }
 
   public record Header(String VERSION, int MESSAGE_ID,
                        Integer MESSAGE_RESPONSE_ID, String TIMESTAMP,
-                       String SENDER_ID, String TYPE)
+                       String SENDER_ID, MessageType TYPE)
   {
   }
 
