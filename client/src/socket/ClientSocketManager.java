@@ -110,7 +110,7 @@ public class ClientSocketManager implements ClientSocket
                         case SET_LIGHT -> handleSetLight(message);
                         case UPDATE_TOTAL -> handleUpdateTotal(message);
                         case SYNC_STATE -> handleSyncState(message);
-                    };
+                    }
                 }
             } catch (IOException e)
             {
@@ -157,7 +157,6 @@ public class ClientSocketManager implements ClientSocket
             disconnect();
             return null;
         }
-
         return JsonUtil.fromJson(line);
     }
 
@@ -168,7 +167,6 @@ public class ClientSocketManager implements ClientSocket
             System.out.println("No server connection.");
             return;
         }
-
         out.println(JsonUtil.toJson(message));
     }
 }

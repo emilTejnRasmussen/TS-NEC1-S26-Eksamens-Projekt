@@ -87,7 +87,7 @@ public class JsonMessage
   {
     Header header = createHeader(senderId, responseMessageId, MessageType.ACK);
 
-    Body body = new Body(type + " accepted", null, null, null, null, null,
+    Body body = new Body(type + " acknowledged", null, null, null, null, null,
         null, null);
     return new JsonMessage(header, body);
   }
