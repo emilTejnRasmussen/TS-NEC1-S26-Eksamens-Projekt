@@ -1,12 +1,14 @@
 import socket.ClientSocketManager;
 import socket.json.ClientType;
 ClientSocketManager socket;
+
 void main() {
     socket = new ClientSocketManager("localhost", 6789);
     boolean running = true;
     Scanner input = new Scanner(System.in);
 
     createClients();
+
     while (running) {
         System.out.print("> ");
         String line = input.nextLine();

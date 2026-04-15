@@ -59,7 +59,7 @@ public class ServerClientHandler implements Runnable
 
             while ((line = in.readLine()) != null)
             {
-                System.out.println("Recieved from " + CLIENT_ADDRESS + ": " + line);
+                System.out.println("Received from " + CLIENT_ADDRESS + ": " + line);
                 JsonMessage message = JsonUtil.fromJson(line);
 
                 handleMessage(message);
@@ -99,6 +99,12 @@ public class ServerClientHandler implements Runnable
     private void handleRegister(JsonMessage message)
     {
         System.out.println(message.getHEADER().SENDER_ID() + ": " + message.getBODY().TEXT());
+
+        int responseMessageId = message.getHEADER().MESSAGE_ID();
+        MessageType type = message.getHEADER().TYPE();
+
+        JsonMessage response = JsonMessage.createAckMessage(SENDER_ID, responseMessageId, type);
+        out.println(JsonUtil.toJson(response));
     }
 
     private void handleHeartbeat(JsonMessage message)
