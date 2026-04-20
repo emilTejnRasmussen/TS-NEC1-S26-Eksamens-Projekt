@@ -1,5 +1,6 @@
 package socket.json;
 
+
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -83,17 +84,17 @@ public class JsonMessage
 
   // Server -> client
   public static JsonMessage createAckMessage(String senderId,
-      int responseMessageId, MessageType type)
+      int responseMessageId, MessageType responseType)
   {
     Header header = createHeader(senderId, responseMessageId, MessageType.ACK);
 
-    Body body = new Body(type + " accepted", null, null, null, null, null,
+    Body body = new Body(responseType + " acknowledged", null, null, null, null, null,
         null, null);
     return new JsonMessage(header, body);
   }
 
   public static JsonMessage createErrorMessage(String senderId,
-      String errorMessage, int responseMessageId)
+      int responseMessageId, String errorMessage)
   {
     Header header = createHeader(senderId, responseMessageId,
         MessageType.ERROR);
@@ -103,19 +104,23 @@ public class JsonMessage
   }
 
   public static JsonMessage createSetLightMessage(String senderId,
-      boolean isOccupied, Integer spotId)
+      SpotState spotState, Integer spotId)
   {
     Header header = createHeader(senderId, null, MessageType.SET_LIGHT);
 
-    String color = isOccupied ? "RED" : "GREEN";
+    String color = switch (spotState){
+      case FREE -> "green";
+      case OCCUPIED -> "red";
+      case UNKNOWN -> "yellow";
+    };
 
     Body body = new Body("Change to color to " + color, null, null, spotId,
-        isOccupied, color, null, null);
+        spotState, color, null, null);
     return new JsonMessage(header, body);
   }
 
-  public static JsonMessage createUpdateTotalMessage(String senderId,
-      int freeSpaces, int totalSpaces)
+  public static JsonMessage createUpdateDisplayMessage(String senderId,
+                                                       int freeSpaces, int totalSpaces)
   {
     Header header = createHeader(senderId, null, MessageType.UPDATE_TOTAL);
 
@@ -126,7 +131,7 @@ public class JsonMessage
 
   public static JsonMessage createSyncStateMessage(String senderId,
       Integer responseMessageId, ClientType clientType, Integer spotId,
-      Boolean occupied, String color, Integer freeSpaces, Integer totalSpaces)
+      SpotState spotState, String color, Integer freeSpaces, Integer totalSpaces)
   {
     Header header = createHeader(senderId, responseMessageId,
         MessageType.SYNC_STATE);
@@ -136,7 +141,7 @@ public class JsonMessage
         null,
         clientType,
         spotId,
-        occupied,
+        spotState,
         color,
         freeSpaces,
         totalSpaces
@@ -186,7 +191,7 @@ public class JsonMessage
   }
 
   public record Body(String TEXT, String ERROR_DESCRIPTION,
-                     ClientType CLIENT_TYPE, Integer SPOT_ID, Boolean OCCUPIED,
+                     ClientType CLIENT_TYPE, Integer SPOT_ID, SpotState spotState,
                      String COLOR, Integer FREE_SPACES, Integer TOTAL_SPACES)
   {
   }
