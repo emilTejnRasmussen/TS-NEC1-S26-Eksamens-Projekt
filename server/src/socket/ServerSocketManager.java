@@ -1,5 +1,7 @@
 package socket;
 
+import registry.ClientRegistry;
+import service.ParkingLotService;
 import socket.json.JsonMessage;
 import socket.json.JsonUtil;
 import socket.json.MessageType;
@@ -11,15 +13,16 @@ import java.util.Scanner;
 
 public class ServerSocketManager
 {
-    public final ServerClientHandlerPool HANDLER_POOL;
+    private final ClientRegistry clientRegistry;
+    private final ParkingLotService parkingLotService;
     private static final String SENDER_ID = "server";
     private ServerSocket welcomeSocket;
     private boolean RUNNING = true;
 
-    public ServerSocketManager(int port)
+    public ServerSocketManager(int port, ClientRegistry clientRegistry, ParkingLotService parkingLotService)
     {
-
-        HANDLER_POOL = new ServerClientHandlerPool();
+        this.clientRegistry = clientRegistry;
+        this.parkingLotService = parkingLotService;
 
         System.out.println("Starting Server...");
 
@@ -33,11 +36,12 @@ public class ServerSocketManager
 
                 Socket socket = welcomeSocket.accept();
 
-                ServerClientHandler handler = new ServerClientHandler(socket, HANDLER_POOL, SENDER_ID);
+                ServerClientHandler handler = new ServerClientHandler(socket, parkingLotService);
+                clientRegistry.addClient(handler);
+
                 Thread thread = new Thread(handler);
                 thread.setDaemon(true);
                 thread.start();
-                HANDLER_POOL.add(handler);
             }
 
         } catch (IOException e) {
@@ -46,7 +50,7 @@ public class ServerSocketManager
     }
 
     public void broadcast(JsonMessage message) {
-        HANDLER_POOL.broadcast(message, null);
+        parkingLotService.broadcast(message, null);
     }
 
     // TODO fix this
