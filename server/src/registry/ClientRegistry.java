@@ -44,8 +44,6 @@ public class ClientRegistry
     }
 
     public synchronized Set<ServerClientHandler> getAllClients() {
-
-
         return new HashSet<>(allClients);
     }
 
