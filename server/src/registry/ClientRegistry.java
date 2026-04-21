@@ -49,7 +49,7 @@ public class ClientRegistry
         return new HashSet<>(allClients);
     }
 
-    public void removeClient(ServerClientHandler handler)
+    public synchronized void removeClient(ServerClientHandler handler)
     {
         allClients.remove(handler);
         sensors.values().remove(handler);
