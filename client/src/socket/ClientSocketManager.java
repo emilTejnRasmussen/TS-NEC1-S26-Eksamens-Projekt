@@ -138,9 +138,11 @@ public class ClientSocketManager implements ClientSocket
 
     private void handleUpdateTotal(JsonMessage message)
     {
-        System.out.println("UPDATE_TOTAL received: "
-                + message.getBODY().FREE_SPACES()
-                + "/" + message.getBODY().TOTAL_SPACES());
+        int freeSpaces = message.getBODY().FREE_SPACES();
+        System.out.print("DISPLAY_TEXT: ");
+        if (freeSpaces == 0) System.out.println("Ingen ledige pladser");
+        else if (freeSpaces == 1) System.out.println(freeSpaces + " ledig plads");
+        else System.out.println(freeSpaces + " ledige pladser");
     }
 
     private void handleSyncState(JsonMessage message)

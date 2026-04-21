@@ -74,8 +74,7 @@ public class ServerClientHandler implements Runnable
         } catch (Exception e)
         {
             System.out.println(
-                    "Client disconnected or error from " + CLIENT_ADDRESS + ": "
-                            + e.getMessage());
+                    "Client disconnected or error from " + CLIENT_ADDRESS);
         } finally
         {
             closeConnection();
