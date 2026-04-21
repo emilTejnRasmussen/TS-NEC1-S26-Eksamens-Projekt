@@ -1,6 +1,7 @@
 package presentation.views;
 
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
@@ -15,19 +16,28 @@ public class ClientPickerMenuController
     public void handleLightPicked() throws IOException
     {
         Integer spotId = showSpotIdSelectionPopup("LIGHT");
-        if (spotId == null) System.out.println("Dialog box closed");
+        if (spotId == null)
+        {
+            System.out.println("Dialog box closed");
+            return;
+        }
 
         System.out.println("Light registered on spot " + spotId);
         ViewManager.showLight(spotId);
     }
 
     @FXML
-    public void handleSensorPicked()
+    public void handleSensorPicked() throws IOException
     {
         Integer spotId = showSpotIdSelectionPopup("SENSOR");
-        if (spotId == null) System.out.println("Dialog box closed");
+        if (spotId == null)
+        {
+            System.out.println("Dialog box closed");
+            return;
+        }
 
         System.out.println("Sensor registered on spot " + spotId);
+        ViewManager.showSensor(spotId);
     }
 
     @FXML

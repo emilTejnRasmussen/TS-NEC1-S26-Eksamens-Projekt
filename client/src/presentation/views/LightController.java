@@ -29,18 +29,6 @@ public class LightController implements AcceptsSpotId, PropertyChangeListener
         lightClient.addListener(this);
     }
 
-    private void setOccupied() {
-        lightPane.getStyleClass().add("spot-occupied");
-    }
-
-    private void setFreed() {
-        lightPane.getStyleClass().add("spot-free");
-    }
-
-    private void setUnknown() {
-        lightPane.getStyleClass().add("spot-unknown");
-    }
-
     @Override
     public void argument(int spotId)
     {
@@ -59,7 +47,6 @@ public class LightController implements AcceptsSpotId, PropertyChangeListener
                 SpotState spotState = ((JsonMessage) evt.getNewValue()).getBODY().spotState();
                 changeLight(spotState);
             }
-
         }
     }
 
@@ -68,9 +55,9 @@ public class LightController implements AcceptsSpotId, PropertyChangeListener
         lightPane.getStyleClass().removeAll("spot-occupied", "spot-free", "spot-unknown");
 
         switch (spotState) {
-            case FREE -> setFreed();
-            case OCCUPIED -> setOccupied();
-            case UNKNOWN -> setUnknown();
+            case FREE -> lightPane.getStyleClass().add("spot-free");
+            case OCCUPIED -> lightPane.getStyleClass().add("spot-occupied");
+            case UNKNOWN -> lightPane.getStyleClass().add("spot-unknown");
         }
     }
 }
