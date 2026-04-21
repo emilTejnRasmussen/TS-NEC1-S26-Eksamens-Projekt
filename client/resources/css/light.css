@@ -1,0 +1,11 @@
+.spot-free {
+    -fx-background-color: #49E29D;
+}
+
+.spot-occupied {
+    -fx-background-color: #FB747E;
+}
+
+.spot-unknown {
+    -fx-background-color: #FADB8C;
+}

@@ -5,6 +5,8 @@ import socket.json.JsonMessage;
 import socket.json.JsonUtil;
 import socket.json.MessageType;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,9 +19,12 @@ public class ClientSocketManager implements ClientSocket
     private BufferedReader in;
     private PrintWriter out;
 
+    private PropertyChangeSupport support;
+
     public ClientSocketManager(String host, int port)
     {
         connect(host, port);
+        support = new PropertyChangeSupport(this);
     }
 
     @Override
@@ -122,11 +127,13 @@ public class ClientSocketManager implements ClientSocket
     private void handleAck(JsonMessage message)
     {
         System.out.println("ACK received: " + message.getBODY().TEXT());
+        support.firePropertyChange(MessageType.ACK.toString(), null, message);
     }
 
     private void handleError(JsonMessage message)
     {
         System.out.println("ERROR received: " + message.getBODY().ERROR_DESCRIPTION());
+        support.firePropertyChange(MessageType.ERROR.toString(), null, message);
     }
 
     private void handleSetLight(JsonMessage message)
@@ -134,6 +141,8 @@ public class ClientSocketManager implements ClientSocket
         System.out.println("SET_LIGHT received for spot "
                 + message.getBODY().SPOT_ID()
                 + ", color=" + message.getBODY().COLOR());
+
+        support.firePropertyChange(MessageType.SET_LIGHT.toString(), null, message);
     }
 
     private void handleUpdateTotal(JsonMessage message)
@@ -148,6 +157,7 @@ public class ClientSocketManager implements ClientSocket
     private void handleSyncState(JsonMessage message)
     {
         System.out.println("SYNC_STATE received: " + message.getBODY());
+        support.firePropertyChange(MessageType.SYNC_STATE.toString(), null, message);
     }
 
     private JsonMessage readMessage() throws IOException
@@ -170,5 +180,15 @@ public class ClientSocketManager implements ClientSocket
             return;
         }
         out.println(JsonUtil.toJson(message));
+    }
+
+    public void addListener(PropertyChangeListener listener)
+    {
+        support.addPropertyChangeListener(listener);
+    }
+
+    public void removeListener(PropertyChangeListener listener)
+    {
+        support.removePropertyChangeListener(listener);
     }
 }

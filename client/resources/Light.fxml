@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="429.0" prefWidth="354.0" spacing="40.0" stylesheets="@css/light.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.views.LightController">
+    <VBox fx:id="lightPane" alignment="CENTER" maxHeight="80.0" maxWidth="80.0" minHeight="80.0" minWidth="80.0"
+          prefHeight="80.0" prefWidth="80.0"
+          style="-fx-background-radius: 50; -fx-border-radius: 50; -fx-border-color: black; -fx-border-width: 4;">
+        <Label fx:id="spotIdLbl" alignment="CENTER" contentDisplay="CENTER" text="1">
+           <font>
+               <Font name="System Bold" size="24.0"/>
+           </font>
+        </Label>
+    </VBox>
+    <TextArea prefHeight="240.0" prefWidth="354.0" />
+</VBox>
