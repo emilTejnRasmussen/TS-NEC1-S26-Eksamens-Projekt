@@ -42,35 +42,42 @@ public class ViewManager
         primaryStage.setTitle("Sensor");
     }
 
-    public static void showDisplay() {
-
+    public static void showDisplay(Integer clientId) throws IOException
+    {
+        showClient("/Display.fxml", clientId);
+        setIcon("display");
+        primaryStage.setTitle("Display");
     }
 
-    private static void showClient(String url, int spotId) throws IOException
+    private static void showClient(String url, Integer clientId) throws IOException
     {
         primaryStage.hide();
-        primaryStage.setScene(load(url, spotId));
+        primaryStage.setScene(load(url, clientId));
         primaryStage.setAlwaysOnTop(true);
         primaryStage.setResizable(false);
         primaryStage.show();
     }
 
-    private static Scene load(String url, int spotId) throws IOException
+    private static Scene load(String url, Integer clientId) throws IOException
     {
         FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(ViewManager.class.getResource(url)));
-
         VBox vBox = loader.load();
-        AcceptsSpotId controller = loader.getController();
-        controller.argument(spotId);
+
+        Object controller = loader.getController();
+        if (controller instanceof AcceptsIntegerArgument ctrl)
+        {
+            ctrl.argument(clientId);
+        }
 
         return new Scene(vBox);
     }
 
-    private static void setIcon(String type) {
+    private static void setIcon(String type)
+    {
         primaryStage.getIcons().clear();
 
         Image icon = new Image(Objects.requireNonNull(
-                ViewManager.class.getResourceAsStream("/icons/" + type +".png")
+                ViewManager.class.getResourceAsStream("/icons/" + type + ".png")
         ));
         primaryStage.getIcons().add(icon);
     }

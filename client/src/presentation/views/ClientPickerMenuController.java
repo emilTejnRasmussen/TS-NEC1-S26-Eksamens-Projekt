@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
 import presentation.core.ViewManager;
+import socket.json.ClientType;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -13,7 +14,7 @@ public class ClientPickerMenuController
     @FXML
     public void handleLightPicked() throws IOException
     {
-        Integer spotId = showSpotIdSelectionPopup("LIGHT");
+        Integer spotId = showClientIdSelectionPopup(ClientType.LIGHT);
         if (spotId == null)
         {
             System.out.println("Dialog box closed");
@@ -27,7 +28,7 @@ public class ClientPickerMenuController
     @FXML
     public void handleSensorPicked() throws IOException
     {
-        Integer spotId = showSpotIdSelectionPopup("SENSOR");
+        Integer spotId = showClientIdSelectionPopup(ClientType.SENSOR);
         if (spotId == null)
         {
             System.out.println("Dialog box closed");
@@ -39,17 +40,27 @@ public class ClientPickerMenuController
     }
 
     @FXML
-    public void handleDisplayPicked()
+    public void handleDisplayPicked() throws IOException
     {
+        Integer clientId = showClientIdSelectionPopup(ClientType.DISPLAY);
+        if (clientId == null)
+        {
+            System.out.println("Dialog box closed");
+            return;
+        }
 
+        System.out.println("Display registered with clientId " + clientId);
+        ViewManager.showDisplay(clientId);
     }
 
-    private Integer showSpotIdSelectionPopup(String clientType)
+    private Integer showClientIdSelectionPopup( ClientType clientType)
     {
+        String message = clientType == ClientType.DISPLAY ? "clientId" : "spot";
+
         TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Spot picker");
-        dialog.setHeaderText("Pick spot to register " + clientType);
-        dialog.setContentText("Spot number: ");
+        dialog.setTitle(message + " picker");
+        dialog.setHeaderText("Pick " + message + " to register " + clientType);
+        dialog.setContentText(message + " number: ");
 
         while (true) {
             Optional<String> result = dialog.showAndWait();

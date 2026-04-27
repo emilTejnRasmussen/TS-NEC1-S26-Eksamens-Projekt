@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="300.0" spacing="40.0" stylesheets="@css/light.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.views.DisplayController">
+    <padding>
+        <Insets top="25.0" />
+    </padding>
+    <VBox alignment="CENTER" style="-fx-border-color: grey; -fx-border-width: 3; -fx-background-color: lightgrey;" VBox.vgrow="ALWAYS">
+        <VBox.margin>
+            <Insets left="15.0" right="15.0" />
+        </VBox.margin>
+        <padding>
+            <Insets bottom="15.0" top="15.0" />
+        </padding>
+        <Label fx:id="displayLbl" text="DISPLAY_VALUE">
+            <font>
+                <Font size="36.0" />
+            </font>
+            <VBox.margin>
+                <Insets />
+            </VBox.margin>
+        </Label>
+    </VBox>
+    <Region prefHeight="19.0" prefWidth="300.0" />
+    <TextArea fx:id="textArea" minHeight="215.0" prefHeight="240.0" prefWidth="350.0" />
+</VBox>

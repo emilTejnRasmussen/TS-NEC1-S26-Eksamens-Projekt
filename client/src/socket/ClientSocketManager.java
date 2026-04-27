@@ -149,9 +149,11 @@ public class ClientSocketManager implements ClientSocket
     {
         int freeSpaces = message.getBODY().FREE_SPACES();
         System.out.print("DISPLAY_TEXT: ");
-        if (freeSpaces == 0) System.out.println("Ingen ledige pladser");
-        else if (freeSpaces == 1) System.out.println(freeSpaces + " ledig plads");
-        else System.out.println(freeSpaces + " ledige pladser");
+        if (freeSpaces == 0) System.out.println("Ingen ledige");
+        else if (freeSpaces == 1) System.out.println(freeSpaces + " ledig");
+        else System.out.println(freeSpaces + " ledige");
+
+        support.firePropertyChange(MessageType.UPDATE_TOTAL.toString(), null, message);
     }
 
     private void handleSyncState(JsonMessage message)

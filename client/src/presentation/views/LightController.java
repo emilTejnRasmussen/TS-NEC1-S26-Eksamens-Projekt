@@ -4,7 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
-import presentation.core.AcceptsSpotId;
+import presentation.core.AcceptsIntegerArgument;
 import presentation.core.DisplayUtil;
 import socket.ClientSocketManager;
 import socket.json.ClientType;
@@ -15,7 +15,7 @@ import socket.json.SpotState;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public class LightController implements AcceptsSpotId, PropertyChangeListener
+public class LightController implements AcceptsIntegerArgument, PropertyChangeListener
 {
     @FXML
     private TextArea textArea;
@@ -37,7 +37,7 @@ public class LightController implements AcceptsSpotId, PropertyChangeListener
     public void argument(int spotId)
     {
         lightClient.register("light-" + spotId, spotId, ClientType.LIGHT);
-        spotIdLbl.textProperty().set(spotId + "");
+        spotIdLbl.setText(spotId + "");
     }
 
     @Override

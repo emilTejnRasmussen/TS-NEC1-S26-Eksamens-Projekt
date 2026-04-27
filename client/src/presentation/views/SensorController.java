@@ -5,7 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import presentation.core.AcceptsSpotId;
+import presentation.core.AcceptsIntegerArgument;
 import presentation.core.DisplayUtil;
 import socket.ClientSocketManager;
 import socket.json.ClientType;
@@ -15,7 +15,7 @@ import socket.json.MessageType;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public class SensorController implements AcceptsSpotId, PropertyChangeListener
+public class SensorController implements AcceptsIntegerArgument, PropertyChangeListener
 {
     @FXML
     private TextArea textField;
@@ -46,7 +46,7 @@ public class SensorController implements AcceptsSpotId, PropertyChangeListener
         this.senderId = "sensor-" + spotId;
 
         this.sensorClient.register(senderId, spotId, ClientType.SENSOR);
-        this.spotIdLbl.textProperty().set(spotId + "");
+        this.spotIdLbl.setText(spotId + "");
     }
 
     @FXML

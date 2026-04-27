@@ -72,10 +72,9 @@ public class ParkingLotService
                 ServerClientHandler lightHandler = clientRegistry.getLight(spotId);
                 if (lightHandler != null)
                     updateLight(spotId, parkingLotState.getSpotState(spotId));
+                updateDisplays();
             }
         }
-
-        updateDisplays();
     }
 
     public synchronized void handleHeartBeat(ServerClientHandler serverClientHandler, JsonMessage message)
