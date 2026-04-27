@@ -2,6 +2,7 @@ package presentation.core;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -19,6 +20,10 @@ public class ViewManager
         FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(ViewManager.class.getResource("/ClientPickerMenu.fxml")));
         VBox vBox = loader.load();
         Scene scene = new Scene(vBox);
+
+        setIcon("picker");
+        primaryStage.setTitle("ClientTypePicker");
+
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -26,11 +31,15 @@ public class ViewManager
     public static void showLight(Integer spotId) throws IOException
     {
         showClient("/Light.fxml", spotId);
+        setIcon("light");
+        primaryStage.setTitle("Light");
     }
 
     public static void showSensor(Integer spotId) throws IOException
     {
         showClient("/Sensor.fxml", spotId);
+        setIcon("sensor");
+        primaryStage.setTitle("Sensor");
     }
 
     public static void showDisplay() {
@@ -42,6 +51,7 @@ public class ViewManager
         primaryStage.hide();
         primaryStage.setScene(load(url, spotId));
         primaryStage.setAlwaysOnTop(true);
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 
@@ -54,5 +64,14 @@ public class ViewManager
         controller.argument(spotId);
 
         return new Scene(vBox);
+    }
+
+    private static void setIcon(String type) {
+        primaryStage.getIcons().clear();
+
+        Image icon = new Image(Objects.requireNonNull(
+                ViewManager.class.getResourceAsStream("/icons/" + type +".png")
+        ));
+        primaryStage.getIcons().add(icon);
     }
 }

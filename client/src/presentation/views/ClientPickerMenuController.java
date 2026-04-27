@@ -1,7 +1,5 @@
 package presentation.views;
 
-
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
@@ -56,7 +54,6 @@ public class ClientPickerMenuController
         while (true) {
             Optional<String> result = dialog.showAndWait();
 
-            // User pressed Cancel or closed the dialog
             if (result.isEmpty()) {
                 return null;
             }

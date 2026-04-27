@@ -6,11 +6,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import presentation.core.AcceptsSpotId;
+import presentation.core.DisplayUtil;
 import socket.ClientSocketManager;
 import socket.json.ClientType;
 import socket.json.JsonMessage;
 import socket.json.MessageType;
-import socket.json.SpotState;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -35,15 +35,18 @@ public class SensorController implements AcceptsSpotId, PropertyChangeListener
     {
         sensorClient = new ClientSocketManager("localhost", 6789);
         sensorClient.addListener(this);
+
+        textField.selectEnd();
     }
 
     @Override
     public void argument(int spotId)
     {
-        senderId = "sensor-" + spotId;
         this.spotId = spotId;
-        sensorClient.register(senderId, spotId, ClientType.SENSOR);
-        spotIdLbl.textProperty().set(spotId + "");
+        this.senderId = "sensor-" + spotId;
+
+        this.sensorClient.register(senderId, spotId, ClientType.SENSOR);
+        this.spotIdLbl.textProperty().set(spotId + "");
     }
 
     @FXML
@@ -58,7 +61,6 @@ public class SensorController implements AcceptsSpotId, PropertyChangeListener
         }
 
         isOccupied = !isOccupied;
-        System.out.println("Is occupied: " + isOccupied);
     }
 
     @Override
@@ -73,7 +75,6 @@ public class SensorController implements AcceptsSpotId, PropertyChangeListener
             case ACK ->
             {
                 System.out.println("SensorController received ACK");
-                System.out.println("Is occupied: " + isOccupied);
                 String buttonText = isOccupied ?
                         "Move car" :
                         "Park car";
@@ -82,5 +83,7 @@ public class SensorController implements AcceptsSpotId, PropertyChangeListener
             }
             case ERROR -> System.out.println("SensorController received ERROR");
         }
+
+        DisplayUtil.display(textField, message);
     }
 }
