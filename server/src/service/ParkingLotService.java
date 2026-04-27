@@ -27,7 +27,6 @@ public class ParkingLotService
 
     public synchronized void handleRegister(ServerClientHandler serverClientHandler, JsonMessage message)
     {
-
         String clientId = message.getHEADER().SENDER_ID();
         ClientType clientType = message.getBODY().CLIENT_TYPE();
         Integer spotId = message.getBODY().SPOT_ID();
@@ -59,10 +58,8 @@ public class ParkingLotService
                 }
             }
         }
-
         serverClientHandler.setRegistered(true);
         sendAck(serverClientHandler, message);
-
 
         switch (clientType)
         {

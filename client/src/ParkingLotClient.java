@@ -8,6 +8,7 @@ public class ParkingLotClient extends Application
     @Override
     public void start(Stage primaryStage) throws Exception
     {
-        ViewManager.showClientPickerMenu(primaryStage);
+        ViewManager.setPrimaryStage(primaryStage);
+        ViewManager.showClientPickerMenu();
     }
 }

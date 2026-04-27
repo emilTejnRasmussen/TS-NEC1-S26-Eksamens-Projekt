@@ -13,9 +13,10 @@ public class ViewManager
 {
     private static Stage primaryStage;
 
-    public static void showClientPickerMenu(Stage stage) throws IOException
+    public static void showClientPickerMenu() throws IOException
     {
-        primaryStage = stage;
+        primaryStage.hide();
+        primaryStage.setAlwaysOnTop(false);
 
         FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(ViewManager.class.getResource("/ClientPickerMenu.fxml")));
         VBox vBox = loader.load();
@@ -80,5 +81,9 @@ public class ViewManager
                 ViewManager.class.getResourceAsStream("/icons/" + type + ".png")
         ));
         primaryStage.getIcons().add(icon);
+    }
+
+    public static void setPrimaryStage(Stage stage) {
+        primaryStage = stage;
     }
 }

@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import presentation.core.AcceptsIntegerArgument;
 import presentation.core.DisplayUtil;
+import presentation.core.ErrorUtil;
 import socket.ClientSocketManager;
 import socket.json.ClientType;
 import socket.json.JsonMessage;
@@ -67,7 +68,7 @@ public class SensorController implements AcceptsIntegerArgument, PropertyChangeL
     public void propertyChange(PropertyChangeEvent evt)
     {
         MessageType type = MessageType.valueOf(evt.getPropertyName());
-        JsonMessage message = ((JsonMessage) evt.getNewValue());
+        JsonMessage messageReceived = ((JsonMessage) evt.getNewValue());
 
 
         switch (type)
@@ -81,9 +82,12 @@ public class SensorController implements AcceptsIntegerArgument, PropertyChangeL
 
                 Platform.runLater(() -> sensorBtn.setText(buttonText));
             }
-            case ERROR -> System.out.println("SensorController received ERROR");
+            case ERROR -> {
+                String errorMessage = messageReceived.getBODY().ERROR_DESCRIPTION();
+                ErrorUtil.handleError(errorMessage, sensorClient, this);
+            }
         }
 
-        DisplayUtil.display(textField, message);
+        DisplayUtil.display(textField, messageReceived);
     }
 }

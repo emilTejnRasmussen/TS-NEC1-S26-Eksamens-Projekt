@@ -1,11 +1,15 @@
 package presentation.views;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import presentation.core.AcceptsIntegerArgument;
 import presentation.core.DisplayUtil;
+import presentation.core.ErrorUtil;
+import presentation.core.ViewManager;
 import socket.ClientSocketManager;
 import socket.json.ClientType;
 import socket.json.JsonMessage;
@@ -14,6 +18,7 @@ import socket.json.SpotState;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 
 public class LightController implements AcceptsIntegerArgument, PropertyChangeListener
 {
@@ -48,10 +53,13 @@ public class LightController implements AcceptsIntegerArgument, PropertyChangeLi
 
         switch (type){
             case ACK -> System.out.println("LightController received ACK");
-            case ERROR -> System.out.println("LightController received ERROR");
+            case ERROR -> {
+                String errorMessage = messageReceived.getBODY().ERROR_DESCRIPTION();
+                ErrorUtil.handleError(errorMessage, lightClient, this);
+            }
             case SET_LIGHT, SYNC_STATE -> {
                 SpotState spotState = messageReceived.getBODY().spotState();
-                changeLight(spotState);
+                Platform.runLater(() -> changeLight(spotState));
             }
         }
         DisplayUtil.display(textArea, messageReceived);

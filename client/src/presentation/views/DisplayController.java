@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import presentation.core.AcceptsIntegerArgument;
 import presentation.core.DisplayUtil;
+import presentation.core.ErrorUtil;
 import socket.ClientSocketManager;
 import socket.json.ClientType;
 import socket.json.JsonMessage;
@@ -44,7 +45,10 @@ public class DisplayController implements AcceptsIntegerArgument, PropertyChange
 
         switch (type){
             case ACK -> System.out.println("DisplayController received ACK");
-            case ERROR -> System.out.println("DisplayController received ERROR");
+            case ERROR -> {
+                String errorMessage = messageReceived.getBODY().ERROR_DESCRIPTION();
+                ErrorUtil.handleError(errorMessage, displayClient, this);
+            }
             case UPDATE_TOTAL, SYNC_STATE -> {
                 int freeSpaces = messageReceived.getBODY().FREE_SPACES();
                 Platform.runLater(() -> changeDisplay(freeSpaces));

@@ -20,11 +20,12 @@ public class ClientSocketManager implements ClientSocket
     private PrintWriter out;
 
     private PropertyChangeSupport support;
+    private volatile boolean running;
 
     public ClientSocketManager(String host, int port)
     {
-        connect(host, port);
         support = new PropertyChangeSupport(this);
+        connect(host, port);
     }
 
     @Override
@@ -39,6 +40,7 @@ public class ClientSocketManager implements ClientSocket
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
 
+            running = true;
             System.out.println("Client established connection with server");
 
             Thread receiverThread = createReceiverThread();
@@ -55,11 +57,13 @@ public class ClientSocketManager implements ClientSocket
     @Override
     public void disconnect()
     {
+        running = false;
+
         try
         {
+            if (socket != null && !socket.isClosed()) socket.close();
             if (in != null) in.close();
             if (out != null) out.close();
-            if (socket != null && !socket.isClosed()) socket.close();
 
             System.out.println("Client closed connection with server");
         }
@@ -102,7 +106,7 @@ public class ClientSocketManager implements ClientSocket
         return new Thread(() -> {
             try
             {
-                while (true)
+                while (running)
                 {
                     JsonMessage message = readMessage();
                     if (message == null) break;
@@ -119,7 +123,14 @@ public class ClientSocketManager implements ClientSocket
                 }
             } catch (IOException e)
             {
-                System.out.println("Error: Message receiver IO failure");
+                if (running) {
+                    System.out.println("Error: Message receiver IO failure");
+                }
+            }
+            finally
+            {
+                running = false;
+                System.out.println("Receiver thread stopped");
             }
         });
     }
@@ -168,7 +179,6 @@ public class ClientSocketManager implements ClientSocket
         if (line == null)
         {
             System.out.println("Server closed the connection.");
-            disconnect();
             return null;
         }
         return JsonUtil.fromJson(line);
