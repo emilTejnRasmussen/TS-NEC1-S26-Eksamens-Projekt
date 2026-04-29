@@ -60,7 +60,7 @@ public class DisplayUtil
                     "\tType: " + MessageType.SYNC_STATE + "\n" +
                             "\tClient Type: " + message.getBODY().CLIENT_TYPE() + "\n" +
                             "\tSpot number: " + message.getBODY().SPOT_ID() + "\n" +
-                            "\tSpot state: " + message.getBODY().spotState() + "\n" +
+                            "\tSpot state: " + message.getBODY().SPOT_STATE() + "\n" +
                             "\tColor: " + message.getBODY().COLOR();
 
             writeToTextField(textArea, displayMessage);
@@ -72,7 +72,7 @@ public class DisplayUtil
         String displayMessage =
                 "\tType: " + MessageType.SET_LIGHT + "\n" +
                         "\tSpot number: " + message.getBODY().SPOT_ID() + "\n" +
-                        "\tSpot state: " + message.getBODY().spotState() + "\n" +
+                        "\tSpot state: " + message.getBODY().SPOT_STATE() + "\n" +
                         "\tColor: " + message.getBODY().COLOR();
 
         writeToTextField(textArea, displayMessage);

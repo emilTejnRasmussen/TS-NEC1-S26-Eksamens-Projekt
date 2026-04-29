@@ -170,7 +170,7 @@ public class JsonMessage
   }
 
   public record Body(String TEXT, String ERROR_DESCRIPTION,
-                     ClientType CLIENT_TYPE, Integer SPOT_ID, SpotState spotState,
+                     ClientType CLIENT_TYPE, Integer SPOT_ID, SpotState SPOT_STATE,
                      String COLOR, Integer FREE_SPACES, Integer TOTAL_SPACES)
   {
   }
