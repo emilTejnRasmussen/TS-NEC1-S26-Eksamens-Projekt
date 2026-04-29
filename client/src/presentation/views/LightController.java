@@ -53,6 +53,7 @@ public class LightController implements AcceptsIntegerArgument, PropertyChangeLi
 
         switch (type){
             case ACK -> System.out.println("LightController received ACK");
+            case BROADCAST -> System.out.println("Broadcast message from server: " + messageReceived.getBODY().TEXT());
             case ERROR -> {
                 String errorMessage = messageReceived.getBODY().ERROR_DESCRIPTION();
                 ErrorUtil.handleError(errorMessage, lightClient, this);

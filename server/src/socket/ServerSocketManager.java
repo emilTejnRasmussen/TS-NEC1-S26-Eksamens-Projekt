@@ -62,7 +62,7 @@ public class ServerSocketManager
                 String text = sc.nextLine();
 
                 if (text.equalsIgnoreCase("q")) {
-                  JsonMessage message = JsonMessage.createBroadcastMessage(SENDER_ID, "SERVER: " + "shutting down server");
+                  JsonMessage message = JsonMessage.createBroadcastMessage(SENDER_ID, "shutting down server");
                   broadcast(message);
                     System.out.println("Terminating server");
                     terminateServer();
@@ -70,7 +70,7 @@ public class ServerSocketManager
                     break;
                 }
                 else {
-                    JsonMessage message = JsonMessage.createBroadcastMessage(SENDER_ID, "SERVER: " + text);
+                    JsonMessage message = JsonMessage.createBroadcastMessage(SENDER_ID, text);
                     broadcast(message);
                 }
             }

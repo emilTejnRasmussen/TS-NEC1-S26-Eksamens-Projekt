@@ -1,6 +1,5 @@
 package socket.json;
 
-
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -152,26 +151,6 @@ public class JsonMessage
   public static JsonMessage createBroadcastMessage(String senderId, String text)
   {
     Header header = createHeader(senderId, null, MessageType.BROADCAST);
-
-    Body body = new Body(text, null, null, null, null, null, null, null);
-    return new JsonMessage(header, body);
-  }
-
-  public static JsonMessage createBroadcastSpotStatusChangedMessage(
-      String senderId, String text)
-  {
-    Header header = createHeader(senderId, null,
-        MessageType.BROADCAST_SPOT_STATUS_CHANGED);
-
-    Body body = new Body(text, null, null, null, null, null, null, null);
-    return new JsonMessage(header, body);
-  }
-
-  public static JsonMessage createBroadcastTotalChangeMessage(String senderId,
-      String text)
-  {
-    Header header = createHeader(senderId, null,
-        MessageType.BROADCAST_TOTAL_CHANGED);
 
     Body body = new Body(text, null, null, null, null, null, null, null);
     return new JsonMessage(header, body);

@@ -45,6 +45,7 @@ public class DisplayController implements AcceptsIntegerArgument, PropertyChange
 
         switch (type){
             case ACK -> System.out.println("DisplayController received ACK");
+            case BROADCAST -> System.out.println("Broadcast message from server: " + messageReceived.getBODY().TEXT());
             case ERROR -> {
                 String errorMessage = messageReceived.getBODY().ERROR_DESCRIPTION();
                 ErrorUtil.handleError(errorMessage, displayClient, this);

@@ -25,6 +25,19 @@ public class ParkingLotService
         this.parkingLotState = parkingLotState;
     }
 
+    public synchronized void broadcast(JsonMessage message, ServerClientHandler serverClientHandler)
+    {
+        List<ServerClientHandler> serverClientHandlers = new ArrayList<>(clientRegistry.getAllClients());
+
+        for (ServerClientHandler handler : serverClientHandlers)
+        {
+            if (!handler.equals(serverClientHandler))
+            {
+                handler.send(message);
+            }
+        }
+    }
+
     public synchronized void handleRegister(ServerClientHandler serverClientHandler, JsonMessage message)
     {
         String clientId = message.getHEADER().SENDER_ID();
@@ -89,6 +102,7 @@ public class ParkingLotService
         sendAck(serverClientHandler, message);
 
         updateLight(spotId, parkingLotState.getSpotState(spotId));
+        broadcast(JsonMessage.createBroadcastMessage(SENDER_ID, "Car parked in spot " + spotId), serverClientHandler);
         updateDisplays();
     }
 
@@ -102,20 +116,8 @@ public class ParkingLotService
         sendAck(serverClientHandler, message);
 
         updateLight(spotId, parkingLotState.getSpotState(spotId));
+        broadcast(JsonMessage.createBroadcastMessage(SENDER_ID, "Car left spot " + spotId), serverClientHandler);
         updateDisplays();
-    }
-
-    public synchronized void broadcast(JsonMessage message, ServerClientHandler serverClientHandler)
-    {
-        List<ServerClientHandler> serverClientHandlers = new ArrayList<>(clientRegistry.getAllClients());
-
-        for (ServerClientHandler handler : serverClientHandlers)
-        {
-            if (!handler.equals(serverClientHandler))
-            {
-                handler.send(message);
-            }
-        }
     }
 
     public synchronized void handleDisconnect(ServerClientHandler serverClientHandler)
@@ -127,6 +129,11 @@ public class ParkingLotService
 
         clientRegistry.removeClient(serverClientHandler);
 
+        String broadcastMessage = spotId != null ?
+                clientType + " on spot " + spotId :
+                serverClientHandler.getRegisteredClientId();
+        broadcast(JsonMessage.createBroadcastMessage(SENDER_ID, broadcastMessage + " has disconnected"), serverClientHandler);
+
         if (!serverClientHandler.isRegistered() || clientType == null || spotId == null) return;
 
         if (clientType == ClientType.SENSOR)
@@ -135,6 +142,7 @@ public class ParkingLotService
             updateLight(spotId, SpotState.UNKNOWN);
             updateDisplays();
         }
+
     }
 
     private boolean isClientNotSensor(ServerClientHandler serverClientHandler, JsonMessage message)

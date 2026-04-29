@@ -82,6 +82,7 @@ public class SensorController implements AcceptsIntegerArgument, PropertyChangeL
 
                 Platform.runLater(() -> sensorBtn.setText(buttonText));
             }
+            case BROADCAST -> System.out.println("Broadcast message from server: " + messageReceived.getBODY().TEXT());
             case ERROR -> {
                 String errorMessage = messageReceived.getBODY().ERROR_DESCRIPTION();
                 ErrorUtil.handleError(errorMessage, sensorClient, this);

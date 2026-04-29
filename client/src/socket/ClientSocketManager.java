@@ -1,5 +1,6 @@
 package socket;
 
+import javafx.application.Platform;
 import socket.json.ClientType;
 import socket.json.JsonMessage;
 import socket.json.JsonUtil;
@@ -116,6 +117,7 @@ public class ClientSocketManager implements ClientSocket
                     switch (messageType) {
                         case ACK -> handleAck(message);
                         case ERROR -> handleError(message);
+                        case BROADCAST -> handleBroadcast(message);
                         case SET_LIGHT -> handleSetLight(message);
                         case UPDATE_TOTAL -> handleUpdateTotal(message);
                         case SYNC_STATE -> handleSyncState(message);
@@ -131,6 +133,7 @@ public class ClientSocketManager implements ClientSocket
             {
                 running = false;
                 System.out.println("Receiver thread stopped");
+                Platform.exit();
             }
         });
     }
@@ -145,6 +148,12 @@ public class ClientSocketManager implements ClientSocket
     {
         System.out.println("ERROR received: " + message.getBODY().ERROR_DESCRIPTION());
         support.firePropertyChange(MessageType.ERROR.toString(), null, message);
+    }
+
+    private void handleBroadcast(JsonMessage message)
+    {
+        System.out.println("BROADCAST Received: " + message.getBODY().TEXT());
+        support.firePropertyChange(MessageType.BROADCAST.toString(), null, message);
     }
 
     private void handleSetLight(JsonMessage message)

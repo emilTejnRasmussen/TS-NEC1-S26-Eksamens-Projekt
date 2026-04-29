@@ -91,7 +91,9 @@ public class DisplayUtil
 
     public static void displayBroadCast(TextArea textArea, JsonMessage message)
     {
-
+        String displayMessage =
+                "\tBroadcast from server: " + message.getBODY().TEXT();
+        writeToTextField(textArea, displayMessage);
     }
 
     private static void writeToTextField(TextArea textArea, String message)
