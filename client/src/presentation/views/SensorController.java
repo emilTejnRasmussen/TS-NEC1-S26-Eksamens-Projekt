@@ -1,6 +1,7 @@
 package presentation.views;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -8,6 +9,7 @@ import javafx.scene.control.TextArea;
 import presentation.core.AcceptsIntegerArgument;
 import presentation.core.DisplayUtil;
 import presentation.core.ErrorUtil;
+import presentation.core.HeartbeatManager;
 import socket.ClientSocketManager;
 import socket.json.ClientType;
 import socket.json.JsonMessage;
@@ -27,8 +29,10 @@ public class SensorController implements AcceptsIntegerArgument, PropertyChangeL
 
     private String senderId;
     private int spotId;
-    private ClientSocketManager sensorClient;
     private boolean isOccupied;
+
+    private ClientSocketManager sensorClient;
+    private HeartbeatManager heartbeatManager;
 
 
     @FXML
@@ -48,6 +52,15 @@ public class SensorController implements AcceptsIntegerArgument, PropertyChangeL
 
         this.sensorClient.register(senderId, spotId, ClientType.SENSOR);
         this.spotIdLbl.setText(spotId + "");
+
+        heartbeatManager = new HeartbeatManager(
+                sensorClient,
+                senderId,
+                spotId,
+                ClientType.SENSOR
+        );
+
+        heartbeatManager.start();
     }
 
     @FXML
@@ -77,8 +90,8 @@ public class SensorController implements AcceptsIntegerArgument, PropertyChangeL
             {
                 System.out.println("SensorController received ACK");
                 String buttonText = isOccupied ?
-                        "Move car" :
-                        "Park car";
+                        "Move" :
+                        "Park";
 
                 Platform.runLater(() -> sensorBtn.setText(buttonText));
             }
@@ -90,5 +103,11 @@ public class SensorController implements AcceptsIntegerArgument, PropertyChangeL
         }
 
         DisplayUtil.display(textField, messageReceived);
+    }
+
+    public void handleHeartbeatToggle()
+    {
+        if (heartbeatManager.isEnabled()) heartbeatManager.pause();
+        else heartbeatManager.resume();
     }
 }

@@ -10,15 +10,19 @@ import java.util.Scanner;
 
 public class ServerSocketManager
 {
-    private final ServerClientHandlerPool serverClientHandlerPool;
+    private final ServerClientHandlerPool HANDLER_POOL;
     private final ParkingLotService parkingLotService;
     private static final String SENDER_ID = "server";
     private ServerSocket welcomeSocket;
     private boolean RUNNING = true;
 
-    public ServerSocketManager(int port, ServerClientHandlerPool serverClientHandlerPool, ParkingLotService parkingLotService)
+    private static final long HEARTBEAT_TIMEOUT_MS = 10000;
+    private static final long HEARTBEAT_CHECK_INTERVAL_MS = 2000;
+
+
+    public ServerSocketManager(int port, ServerClientHandlerPool HANDLER_POOL, ParkingLotService parkingLotService)
     {
-        this.serverClientHandlerPool = serverClientHandlerPool;
+        this.HANDLER_POOL = HANDLER_POOL;
         this.parkingLotService = parkingLotService;
 
         System.out.println("Starting Server...");
@@ -34,11 +38,13 @@ public class ServerSocketManager
                 Socket socket = welcomeSocket.accept();
 
                 ServerClientHandler handler = new ServerClientHandler(socket, parkingLotService);
-                serverClientHandlerPool.addClient(handler);
+                HANDLER_POOL.addClient(handler);
 
                 Thread thread = new Thread(handler);
                 thread.setDaemon(true);
                 thread.start();
+
+                startHeartbeatMonitor();
             }
 
         } catch (IOException e) {
@@ -86,5 +92,37 @@ public class ServerSocketManager
         {
             throw new RuntimeException(e);
         }
+    }
+
+    private void startHeartbeatMonitor()
+    {
+        Thread monitorThread = new Thread(() -> {
+            while (RUNNING) {
+                try {
+                    Thread.sleep(HEARTBEAT_CHECK_INTERVAL_MS);
+
+                    long now = System.currentTimeMillis();
+
+                    for (ServerClientHandler handler : HANDLER_POOL.getAllClients()) {
+                        if (!handler.isRegistered()) continue;
+                        if (handler.isTimedOut()) continue;
+
+                        long elapsed = now - handler.getLastSeen();
+
+                        if (elapsed > HEARTBEAT_TIMEOUT_MS) {
+                            System.out.println("Heartbeat timeout for " + handler.getRegisteredClientId());
+                            parkingLotService.handleHeartbeatTimeout(handler);
+                        }
+                    }
+                }
+                catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        });
+
+        monitorThread.setDaemon(true);
+        monitorThread.start();
     }
 }

@@ -3,11 +3,22 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="300.0" spacing="40.0" stylesheets="@css/light.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.views.LightController">
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="300.0" spacing="10.0" stylesheets="@css/light.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.views.LightController">
+   <HBox prefHeight="100.0" prefWidth="200.0">
+      <children>
+         <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+         <ToggleButton mnemonicParsing="false" onAction="#handleHeartbeatToggle" selected="true" text="Heartbeat" />
+      </children>
+      <VBox.margin>
+         <Insets right="10.0" top="10.0" />
+      </VBox.margin>
+   </HBox>
     <VBox fx:id="lightPane" alignment="CENTER" maxHeight="80.0" maxWidth="80.0" minHeight="80.0" minWidth="80.0" prefHeight="80.0" prefWidth="80.0" style="-fx-background-radius: 50; -fx-border-radius: 50; -fx-border-color: black; -fx-border-width: 4;">
         <Label fx:id="spotIdLbl" alignment="CENTER" contentDisplay="CENTER" text="1">
            <font>
@@ -16,8 +27,5 @@
         </Label>
     </VBox>
    <Region prefHeight="19.0" prefWidth="300.0" />
-    <TextArea fx:id="textArea" prefHeight="240.0" prefWidth="350.0" />
-   <padding>
-      <Insets top="25.0" />
-   </padding>
+    <TextArea fx:id="textArea" maxHeight="225.0" minHeight="225.0" prefHeight="225.0" prefWidth="300.0" />
 </VBox>

@@ -25,6 +25,8 @@ public class ServerClientHandler implements Runnable
     private Integer registeredSpotId;
     private String registeredClientId;
     private boolean isRegistered = false;
+    private volatile long lastSeen = System.currentTimeMillis();
+    private volatile boolean timedOut = false;
 
     public ServerClientHandler(Socket socket, ParkingLotService parkingLotService)
     {
@@ -78,6 +80,22 @@ public class ServerClientHandler implements Runnable
         {
             closeConnection();
         }
+    }
+
+    public void markSeen() {
+        lastSeen = System.currentTimeMillis();
+    }
+
+    public long getLastSeen() {
+        return lastSeen;
+    }
+
+    public boolean isTimedOut() {
+        return timedOut;
+    }
+
+    public void setTimedOut(boolean timedOut) {
+        this.timedOut = timedOut;
     }
 
     private void handleMessage(JsonMessage message)
@@ -155,5 +173,19 @@ public class ServerClientHandler implements Runnable
     public void setRegistered(boolean registered)
     {
         isRegistered = registered;
+    }
+
+    public void closeFromServer()
+    {
+        try
+        {
+            if (socket != null && !socket.isClosed()) socket.close();
+            if (in != null) in.close();
+            if (out != null) out.close();
+        }
+        catch (IOException e)
+        {
+            System.out.println("Error closing client connection from server side");
+        }
     }
 }

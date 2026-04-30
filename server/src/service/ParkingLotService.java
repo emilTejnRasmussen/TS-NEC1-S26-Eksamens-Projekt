@@ -72,6 +72,7 @@ public class ParkingLotService
             }
         }
         serverClientHandler.setRegistered(true);
+        serverClientHandler.markSeen();
         sendAck(serverClientHandler, message);
 
         switch (clientType)
@@ -89,6 +90,7 @@ public class ParkingLotService
 
     public synchronized void handleHeartBeat(ServerClientHandler serverClientHandler, JsonMessage message)
     {
+        serverClientHandler.markSeen();
         sendAck(serverClientHandler, message);
     }
 
@@ -143,6 +145,31 @@ public class ParkingLotService
             updateDisplays();
         }
 
+    }
+
+    public synchronized void handleHeartbeatTimeout(ServerClientHandler handler)
+    {
+        if (handler == null || !handler.isRegistered()) return;
+        if (handler.isTimedOut()) return;
+
+        handler.setTimedOut(true);
+
+        ClientType clientType = handler.getRegisteredClientType();
+        Integer spotId = handler.getRegisteredSpotId();
+
+        Check.Against.nullValue(clientType);
+
+        HANDLER_POOL.removeClient(handler);
+
+        if (clientType == ClientType.SENSOR) {
+            Check.Against.nullValue(spotId);
+
+            parkingLotState.setSpotState(spotId, SpotState.UNKNOWN);
+            updateLight(spotId, SpotState.UNKNOWN);
+            updateDisplays();
+        }
+
+        handler.closeFromServer();
     }
 
     private boolean isClientNotSensor(ServerClientHandler serverClientHandler, JsonMessage message)

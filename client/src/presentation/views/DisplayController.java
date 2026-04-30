@@ -1,12 +1,14 @@
 package presentation.views;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import presentation.core.AcceptsIntegerArgument;
 import presentation.core.DisplayUtil;
 import presentation.core.ErrorUtil;
+import presentation.core.HeartbeatManager;
 import socket.ClientSocketManager;
 import socket.json.ClientType;
 import socket.json.JsonMessage;
@@ -23,6 +25,7 @@ public class DisplayController implements AcceptsIntegerArgument, PropertyChange
     private TextArea textArea;
 
     private ClientSocketManager displayClient;
+    private HeartbeatManager heartbeatManager;
 
     @FXML
     public void initialize()
@@ -34,7 +37,16 @@ public class DisplayController implements AcceptsIntegerArgument, PropertyChange
     @Override
     public void argument(int clientId)
     {
-        displayClient.register("display-" + clientId, null, ClientType.DISPLAY);
+        String senderId = "display-" + clientId;
+        displayClient.register(senderId, null, ClientType.DISPLAY);
+        heartbeatManager = new HeartbeatManager(
+                displayClient,
+                senderId,
+                null,
+                ClientType.DISPLAY
+        );
+
+        heartbeatManager.start();
     }
 
     @Override
@@ -68,4 +80,9 @@ public class DisplayController implements AcceptsIntegerArgument, PropertyChange
         }
     }
 
+    public void handleHeartbeatToggle()
+    {
+        if (heartbeatManager.isEnabled()) heartbeatManager.pause();
+        else heartbeatManager.resume();
+    }
 }

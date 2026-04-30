@@ -47,7 +47,6 @@ public class ClientSocketManager implements ClientSocket
             Thread receiverThread = createReceiverThread();
             receiverThread.setDaemon(true);
             receiverThread.start();
-
         } catch (IOException e)
         {
             System.out.println("Error: Client failed to establish connection to server");
