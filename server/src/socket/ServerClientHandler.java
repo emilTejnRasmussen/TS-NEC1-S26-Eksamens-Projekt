@@ -5,12 +5,14 @@ import socket.json.ClientType;
 import socket.json.JsonMessage;
 import socket.json.JsonUtil;
 import socket.json.MessageType;
+import socket.producer_consumer.SensorEvent;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.concurrent.BlockingQueue;
 
 public class ServerClientHandler implements Runnable
 {
@@ -28,7 +30,9 @@ public class ServerClientHandler implements Runnable
     private volatile long lastSeen = System.currentTimeMillis();
     private volatile boolean timedOut = false;
 
-    public ServerClientHandler(Socket socket, ParkingLotService parkingLotService)
+    private BlockingQueue<SensorEvent> QUEUE;
+
+    public ServerClientHandler(Socket socket, ParkingLotService parkingLotService, BlockingQueue<SensorEvent> queue)
     {
         this.socket = socket;
 
@@ -36,6 +40,7 @@ public class ServerClientHandler implements Runnable
                 socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
 
         this.parkingLotService = parkingLotService;
+        this.QUEUE = queue;
 
         System.out.println("Connection establish with client " + CLIENT_ADDRESS);
 
@@ -98,7 +103,7 @@ public class ServerClientHandler implements Runnable
         this.timedOut = timedOut;
     }
 
-    private void handleMessage(JsonMessage message)
+    private void handleMessage(JsonMessage message) throws InterruptedException
     {
         MessageType type = message.getHEADER().TYPE();
 
@@ -106,8 +111,7 @@ public class ServerClientHandler implements Runnable
         {
             case REGISTER -> parkingLotService.handleRegister(this, message);
             case HEARTBEAT -> parkingLotService.handleHeartBeat(this, message);
-            case CAR_PARKED -> parkingLotService.handleCarParked(this, message);
-            case CAR_LEFT -> parkingLotService.handleCarLeft(this, message);
+            case CAR_PARKED, CAR_LEFT -> QUEUE.put(new SensorEvent(this, message));
             default ->
             {
                 JsonMessage error = JsonMessage.createErrorMessage(

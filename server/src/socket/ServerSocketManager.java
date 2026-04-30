@@ -2,11 +2,15 @@ package socket;
 
 import service.ParkingLotService;
 import socket.json.JsonMessage;
+import socket.producer_consumer.SensorEvent;
+import socket.producer_consumer.SensorEventConsumer;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 public class ServerSocketManager
 {
@@ -19,11 +23,17 @@ public class ServerSocketManager
     private static final long HEARTBEAT_TIMEOUT_MS = 10000;
     private static final long HEARTBEAT_CHECK_INTERVAL_MS = 2000;
 
+    private final BlockingQueue<SensorEvent> sensorQueue;
+
 
     public ServerSocketManager(int port, ServerClientHandlerPool HANDLER_POOL, ParkingLotService parkingLotService)
     {
         this.HANDLER_POOL = HANDLER_POOL;
         this.parkingLotService = parkingLotService;
+        this.sensorQueue = new ArrayBlockingQueue<>(20);
+
+        startSensorEventConsumer();
+        startHeartbeatMonitor();
 
         System.out.println("Starting Server...");
 
@@ -37,14 +47,13 @@ public class ServerSocketManager
 
                 Socket socket = welcomeSocket.accept();
 
-                ServerClientHandler handler = new ServerClientHandler(socket, parkingLotService);
+                ServerClientHandler handler = new ServerClientHandler(socket, parkingLotService, sensorQueue);
                 HANDLER_POOL.addClient(handler);
 
                 Thread thread = new Thread(handler);
                 thread.setDaemon(true);
                 thread.start();
 
-                startHeartbeatMonitor();
             }
 
         } catch (IOException e) {
@@ -124,5 +133,14 @@ public class ServerSocketManager
 
         monitorThread.setDaemon(true);
         monitorThread.start();
+    }
+
+    private void startSensorEventConsumer()
+    {
+        Thread consumerThread = new Thread(
+                new SensorEventConsumer(sensorQueue, parkingLotService)
+        );
+        consumerThread.setDaemon(true);
+        consumerThread.start();
     }
 }
