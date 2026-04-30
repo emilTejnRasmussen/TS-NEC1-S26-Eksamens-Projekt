@@ -1,7 +1,7 @@
 package service;
 
 import guard.Check;
-import registry.ClientRegistry;
+import socket.ServerClientHandlerPool;
 import socket.ServerClientHandler;
 import socket.json.ClientType;
 import socket.json.JsonMessage;
@@ -16,18 +16,18 @@ public class ParkingLotService
 {
     private static final String SENDER_ID = "server";
 
-    private final ClientRegistry clientRegistry;
+    private final ServerClientHandlerPool HANDLER_POOL;
     private final ParkingLotState parkingLotState;
 
-    public ParkingLotService(ClientRegistry clientRegistry, ParkingLotState parkingLotState)
+    public ParkingLotService(ServerClientHandlerPool HANDLER_POOL, ParkingLotState parkingLotState)
     {
-        this.clientRegistry = clientRegistry;
+        this.HANDLER_POOL = HANDLER_POOL;
         this.parkingLotState = parkingLotState;
     }
 
     public synchronized void broadcast(JsonMessage message, ServerClientHandler serverClientHandler)
     {
-        List<ServerClientHandler> serverClientHandlers = new ArrayList<>(clientRegistry.getAllClients());
+        List<ServerClientHandler> serverClientHandlers = new ArrayList<>(HANDLER_POOL.getAllClients());
 
         for (ServerClientHandler handler : serverClientHandlers)
         {
@@ -60,11 +60,11 @@ public class ParkingLotService
 
         switch (clientType)
         {
-            case DISPLAY -> clientRegistry.registerDisplay(serverClientHandler);
-            case LIGHT -> clientRegistry.registerLight(spotId, serverClientHandler);
+            case DISPLAY -> HANDLER_POOL.registerDisplay(serverClientHandler);
+            case LIGHT -> HANDLER_POOL.registerLight(spotId, serverClientHandler);
             case SENSOR ->
             {
-                clientRegistry.registerSensor(spotId, serverClientHandler);
+                HANDLER_POOL.registerSensor(spotId, serverClientHandler);
                 if (parkingLotState.getSpotState(spotId) == SpotState.UNKNOWN)
                 {
                     parkingLotState.setSpotState(spotId, SpotState.FREE);
@@ -79,7 +79,7 @@ public class ParkingLotService
             case LIGHT, DISPLAY -> syncClientState(serverClientHandler, message);
             case SENSOR ->
             {
-                ServerClientHandler lightHandler = clientRegistry.getLight(spotId);
+                ServerClientHandler lightHandler = HANDLER_POOL.getLight(spotId);
                 if (lightHandler != null)
                     updateLight(spotId, parkingLotState.getSpotState(spotId));
                 updateDisplays();
@@ -127,7 +127,7 @@ public class ParkingLotService
         ClientType clientType = serverClientHandler.getRegisteredClientType();
         Integer spotId = serverClientHandler.getRegisteredSpotId();
 
-        clientRegistry.removeClient(serverClientHandler);
+        HANDLER_POOL.removeClient(serverClientHandler);
 
         String broadcastMessage = spotId != null ?
                 clientType + " on spot " + spotId :
@@ -193,7 +193,7 @@ public class ParkingLotService
 
     private void updateDisplays()
     {
-        List<ServerClientHandler> allDisplays = new ArrayList<>(clientRegistry.getDisplays());
+        List<ServerClientHandler> allDisplays = new ArrayList<>(HANDLER_POOL.getDisplays());
 
         JsonMessage updateDisplayMessage = JsonMessage.createUpdateDisplayMessage(
                 SENDER_ID,
@@ -209,7 +209,7 @@ public class ParkingLotService
 
     private void updateLight(int spotId, SpotState spotState)
     {
-        ServerClientHandler lightHandler = clientRegistry.getLight(spotId);
+        ServerClientHandler lightHandler = HANDLER_POOL.getLight(spotId);
         if (lightHandler == null) return;
 
         JsonMessage setLightMessage = JsonMessage.createSetLightMessage(SENDER_ID, spotState, spotId);
@@ -244,14 +244,14 @@ public class ParkingLotService
         {
             case LIGHT ->
             {
-                if (clientRegistry.getLight(spotId) != null)
+                if (HANDLER_POOL.getLight(spotId) != null)
                 {
                     throw new IllegalStateException("A LIGHT is already registered for spot " + spotId + ".");
                 }
             }
             case SENSOR ->
             {
-                if (clientRegistry.getSensor(spotId) != null)
+                if (HANDLER_POOL.getSensor(spotId) != null)
                 {
                     throw new IllegalStateException("A SENSOR is already registered for spot " + spotId + ".");
                 }

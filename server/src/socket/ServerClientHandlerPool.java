@@ -1,13 +1,11 @@
-package registry;
-
-import socket.ServerClientHandler;
+package socket;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class ClientRegistry
+public class ServerClientHandlerPool
 {
     private final Set<ServerClientHandler> allClients = new HashSet<>();
     private final Map<Integer, ServerClientHandler> sensors = new HashMap<>();

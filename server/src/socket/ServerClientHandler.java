@@ -1,6 +1,5 @@
 package socket;
 
-import registry.ClientRegistry;
 import service.ParkingLotService;
 import socket.json.ClientType;
 import socket.json.JsonMessage;

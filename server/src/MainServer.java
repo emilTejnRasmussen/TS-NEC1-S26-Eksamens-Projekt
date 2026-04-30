@@ -1,12 +1,12 @@
-import registry.ClientRegistry;
+import socket.ServerClientHandlerPool;
 import service.ParkingLotService;
 import socket.ServerSocketManager;
 import state.ParkingLotState;
 
 void main() {
-    ClientRegistry clientRegistry = new ClientRegistry();
+    ServerClientHandlerPool serverClientHandlerPool = new ServerClientHandlerPool();
     ParkingLotState parkingLotState = new ParkingLotState(40);
-    ParkingLotService parkingLotService = new ParkingLotService(clientRegistry, parkingLotState);
+    ParkingLotService parkingLotService = new ParkingLotService(serverClientHandlerPool, parkingLotState);
 
-    new ServerSocketManager(6789, clientRegistry, parkingLotService);
+    new ServerSocketManager(6789, serverClientHandlerPool, parkingLotService);
 }
