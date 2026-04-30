@@ -30,7 +30,7 @@ public class ServerClientHandler implements Runnable
     private volatile long lastSeen = System.currentTimeMillis();
     private volatile boolean timedOut = false;
 
-    private BlockingQueue<SensorEvent> QUEUE;
+    private final BlockingQueue<SensorEvent> queue;
 
     public ServerClientHandler(Socket socket, ParkingLotService parkingLotService, BlockingQueue<SensorEvent> queue)
     {
@@ -40,7 +40,7 @@ public class ServerClientHandler implements Runnable
                 socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
 
         this.parkingLotService = parkingLotService;
-        this.QUEUE = queue;
+        this.queue = queue;
 
         System.out.println("Connection establish with client " + CLIENT_ADDRESS);
 
@@ -111,7 +111,7 @@ public class ServerClientHandler implements Runnable
         {
             case REGISTER -> parkingLotService.handleRegister(this, message);
             case HEARTBEAT -> parkingLotService.handleHeartBeat(this, message);
-            case CAR_PARKED, CAR_LEFT -> QUEUE.put(new SensorEvent(this, message));
+            case CAR_PARKED, CAR_LEFT -> queue.put(new SensorEvent(this, message));
             default ->
             {
                 JsonMessage error = JsonMessage.createErrorMessage(

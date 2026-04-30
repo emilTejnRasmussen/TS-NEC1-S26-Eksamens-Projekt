@@ -98,6 +98,6 @@ public class DisplayUtil
 
     private static void writeToTextField(TextArea textArea, String message)
     {
-        textArea.appendText("\n\nMessage received:\n" + message);
+        textArea.appendText("\nMessage received:\n" + message + "\n");
     }
 }

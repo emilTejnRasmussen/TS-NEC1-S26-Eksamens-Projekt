@@ -32,14 +32,14 @@ public class ServerSocketManager
         this.parkingLotService = parkingLotService;
         this.sensorQueue = new ArrayBlockingQueue<>(20);
 
-        startSensorEventConsumer();
-        startHeartbeatMonitor();
-
         System.out.println("Starting Server...");
 
         try {
 
             welcomeSocket = new ServerSocket(port);
+
+            startSensorEventConsumer();
+            startHeartbeatMonitor();
             broadcastThread();
 
             while(RUNNING) {
@@ -68,7 +68,7 @@ public class ServerSocketManager
     // TODO fix this
     private void broadcastThread()
     {
-        new Thread(() -> {
+        Thread broadcastThread = new Thread(() -> {
             Scanner sc = new Scanner(System.in);
             while (true) {
                 String text = sc.nextLine();
@@ -86,7 +86,10 @@ public class ServerSocketManager
                     broadcast(message);
                 }
             }
-        }).start();
+        });
+
+        broadcastThread.setDaemon(true);
+        broadcastThread.start();
     }
 
     private void terminateServer()
