@@ -3,7 +3,7 @@ package state;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParkingLotState {
+public class    ParkingLotState {
     private final Map<Integer, SpotState> spotStates = new HashMap<>();
 
     public ParkingLotState(int totalSpaces) {

@@ -7,8 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class JsonMessage
 {
-  public static final String CURRENT_VERSION = "1.0";
-  public static final AtomicInteger NEXT_ID = new AtomicInteger(1);
+  private static final String CURRENT_VERSION = "1.0";
+  private static final AtomicInteger NEXT_ID = new AtomicInteger(1);
 
   private final Header HEADER;
   private final Body BODY;
